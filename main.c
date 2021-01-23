@@ -31,6 +31,7 @@ int main(void){
                     int index = 0;
                     for(;index<strlen(input);index++ ){
                         input[index] = tolower(input[index]); // All characters lowered.
+                        //a
                     }
                     if(ispunct(input[strlen(input)-1])){ // delete punctuation if there is at end of word.
                         input[strlen(input)-1] = '\0';
