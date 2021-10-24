@@ -28,20 +28,38 @@ void multiplyLists(node **multiplicand, node **multiplier, node **result){
     // multiplier digits
     node *currentMultiplierPtr = *multiplier;
     int multiplierIndex = 0;
+    int skipperFlag = 0;
     while (currentMultiplierPtr != NULL){
             // multiplicand digits
             node *currentMultiplicandPtr = *multiplicand;
             int carry = 0;
+            node* currentResultPtr = *result;
             while (currentMultiplicandPtr != NULL){
                 if(multiplierIndex == 0){
                     int value = currentMultiplierPtr->value * currentMultiplicandPtr->value + carry;
                     carry = (value / 10)%10; // update the carry in here
                     insertNode(result, value%10);
-                    currentMultiplicandPtr = currentMultiplicandPtr->next;
-                }else{
-                    printf("\nindex: %d\n", multiplierIndex);
-                    return;
+                } else if(skipperFlag == 1){
+                    for(int i = 0; i <multiplierIndex; i++){
+                        currentResultPtr = currentResultPtr->next;
+                    }
+                    int value = currentMultiplierPtr->value * currentMultiplicandPtr->value + carry + currentResultPtr->value;
+                    carry = (value / 10)%10; // update the carry in here
+                    currentResultPtr->value = value%10;
+                    skipperFlag = 0;
+                    currentResultPtr = currentResultPtr->next;
+                }else {
+                    int value = currentMultiplierPtr->value * currentMultiplicandPtr->value + carry + currentResultPtr->value;
+                    carry = (value / 10)%10; // update the carry in here
+                    currentResultPtr->value = value%10;
+                    currentResultPtr = currentResultPtr->next;
                 }
+                // handling if there is a carry at the end of multiplication
+                if ((currentMultiplicandPtr->next == NULL) && (carry != 0)) { 
+                    insertNode(result, carry);
+                    skipperFlag = 1;
+                }
+                currentMultiplicandPtr = currentMultiplicandPtr->next;
             }
             // next multiplier digit
             currentMultiplierPtr = currentMultiplierPtr->next;
@@ -64,8 +82,8 @@ int main(void){
     node* multiplierHead = NULL;
     node* resultHead = NULL;
 
-    char input_multiplicand[999] = {'1', '2', '3'};
-    char input_multiplier[999] = {'2', '3'};
+    char input_multiplicand[999] = "5301858469230152002541253";
+    char input_multiplier[999] = "8";
     // read the input
     //fgets(input_multiplicand, 999, stdin);
     //fgets(input_multiplier, 999, stdin);
@@ -73,17 +91,15 @@ int main(void){
     input_multiplicand[strcspn(input_multiplicand, "\n")] = 0;
     input_multiplier[strcspn(input_multiplier, "\n")] = 0;
     
-    for(int i = 0; i<strlen(input_multiplicand); i++){
+    for(int i = strlen(input_multiplicand)-1; i>=0; i--){
         // with -48, the char is turned into the corresponding integer
         insertNode(&multiplicandHead, input_multiplicand[i]-48);
     }
 
-    for(int i = 0; i<strlen(input_multiplier); i++){
+    for(int i = strlen(input_multiplier)-1; i>=0; i--){
         // with -48, the char is turned into the corresponding integer
         insertNode(&multiplierHead, input_multiplier[i]-48);
     }
-    //printf("\nprinting nodes: ");
-    //printNodes(&multiplicandHead);
     multiplyLists(&multiplicandHead, &multiplierHead, &resultHead);
     printf("\nprinting nodes: ");
     printNodes(&resultHead);
