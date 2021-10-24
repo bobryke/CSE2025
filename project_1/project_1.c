@@ -27,34 +27,35 @@ void insertNode(node **head, int value){
 void multiplyLists(node **multiplicand, node **multiplier, node **result){
     // multiplier digits
     node *currentMultiplierPtr = *multiplier;
-    while (currentMultiplierPtr->next != NULL){
+    int multiplierIndex = 0;
+    while (currentMultiplierPtr != NULL){
             // multiplicand digits
             node *currentMultiplicandPtr = *multiplicand;
             int carry = 0;
-            int multiplcandIndex = 0;
-            while (currentMultiplicandPtr->next != NULL){
-                if(index == 0){
+            while (currentMultiplicandPtr != NULL){
+                if(multiplierIndex == 0){
                     int value = currentMultiplierPtr->value * currentMultiplicandPtr->value + carry;
-                    carry = (value /= 10)%10; // update the carry in here
+                    carry = (value / 10)%10; // update the carry in here
                     insertNode(result, value%10);
                     currentMultiplicandPtr = currentMultiplicandPtr->next;
                 }else{
-                    printf("index: %d\n", multiplcandIndex);
+                    printf("\nindex: %d\n", multiplierIndex);
+                    return;
                 }
-                multiplcandIndex += 1;
             }
             // next multiplier digit
             currentMultiplierPtr = currentMultiplierPtr->next;
+            multiplierIndex += 1;
         }
     return;
 }
 
 void printNodes(node **head){
     node *currentPtr = *head;
-    printf("%d", currentPtr->value);
-    while (currentPtr->next != NULL){
-            currentPtr = currentPtr->next;
+    while (currentPtr != NULL){
             printf("%d", currentPtr->value);
+            currentPtr = currentPtr->next;
+            
         }
 }
 
@@ -63,11 +64,11 @@ int main(void){
     node* multiplierHead = NULL;
     node* resultHead = NULL;
 
-    char input_multiplicand[999];
-    char input_multiplier[999];
+    char input_multiplicand[999] = {'1', '2', '3'};
+    char input_multiplier[999] = {'2', '3'};
     // read the input
-    fgets(input_multiplicand, 999, stdin);
-    fgets(input_multiplier, 999, stdin);
+    //fgets(input_multiplicand, 999, stdin);
+    //fgets(input_multiplier, 999, stdin);
     // delete the trailing '/n'
     input_multiplicand[strcspn(input_multiplicand, "\n")] = 0;
     input_multiplier[strcspn(input_multiplier, "\n")] = 0;
@@ -81,9 +82,9 @@ int main(void){
         // with -48, the char is turned into the corresponding integer
         insertNode(&multiplierHead, input_multiplier[i]-48);
     }
-    printf("\nprinting nodes: ");
-    printNodes(&multiplicandHead);
+    //printf("\nprinting nodes: ");
+    //printNodes(&multiplicandHead);
     multiplyLists(&multiplicandHead, &multiplierHead, &resultHead);
     printf("\nprinting nodes: ");
-    //printNodes(&resultHead);
+    printNodes(&resultHead);
 }
