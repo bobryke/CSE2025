@@ -12,8 +12,8 @@ typedef struct node{
     int value;
     int height;
     int positionInDepthLevel;
-    node* leftChild; 
-    node* rightChild; 
+    struct node* leftChild; 
+    struct node* rightChild; 
 } node;
 
 
@@ -40,7 +40,7 @@ node *rightRotate(node *y) {
   y->leftChild = T2;
 
   y->height = MAX(y->leftChild->height, y->rightChild->height) + 1;
-  x->height = MAX(x->leftChild, x->rightChild->height) + 1;
+  x->height = MAX(x->leftChild->height, x->rightChild->height) + 1;
 
   return x;
 }
@@ -67,13 +67,15 @@ int checkBalance(node *N) {
 }
 
 // Insert node
-node *insertnode(node *curNode, node *newNode) {
-  // Find the correct position to insertnode the node and insertnode it
+node *insertAVL(node *curNode, node *newNode) {
+  // Find the correct position to insertNode the node and insertNode it
+  if (curNode == NULL)
+    return (newNode);
 
    if (newNode->value < curNode->value)
-    curNode->leftChild = insertnode(curNode->leftChild, newNode->value);
+    curNode->leftChild = insertAVL(curNode->leftChild, newNode);
   else if (newNode->value > curNode->value)
-    curNode->rightChild = insertnode(curNode->rightChild, newNode->value);
+    curNode->rightChild = insertAVL(curNode->rightChild, newNode);
   else
     return curNode;
 
@@ -101,6 +103,16 @@ node *insertnode(node *curNode, node *newNode) {
 
   return curNode;
 }
+ node *insertBST(node *curNode, node *newNode){
+   if (curNode == NULL){
+     return newNode;
+   }
+   if(newNode->value > curNode->value){
+     curNode->rightChild = insertBST(curNode->rightChild, newNode);
+   }else if(newNode->value < curNode->value){
+     curNode->leftChild = insertBST(curNode->leftChild, newNode);
+   }
+ }
 
 node *minValuenode(node *N) {
   node *current = N;
@@ -109,6 +121,33 @@ node *minValuenode(node *N) {
     current = current->leftChild;
 
   return current;
+}
+
+void printOutput(int numOfNodes){
+  int numberOfFullDepthLevels = (int)floor(log2(numOfNodes));
+  int numberOfDepthLevels = 3*floor(log(numOfNodes)/log(4));
+  int numberOfAccesiveNodes = numOfNodes - (int)pow(2, floor(log2(numOfNodes)))+1-numberOfDepthLevels+numberOfFullDepthLevels+1;
+  int remainingNodes = numOfNodes-(int)pow(2, numberOfFullDepthLevels)+1-numberOfAccesiveNodes;
+  printf("Output:\n");
+  printf("Depth level of BST is %d\n", numberOfDepthLevels);
+  int depthLevel;
+  printf("full\n");
+  for (depthLevel = 0; depthLevel< numberOfFullDepthLevels; depthLevel++){
+    printf("Depth level %d -> %d\n", depthLevel, (int)pow(2,depthLevel));
+  }
+  printf("accces\n");
+  printf("Depth level %d -> %d\n", depthLevel++, numberOfAccesiveNodes);
+  printf("rest\n");
+  while(remainingNodes>0){
+    printf("Depth level %d -> %d\n", depthLevel++, 1);
+    remainingNodes--;
+  }
+  
+}
+
+node findKey(node *root, int key){
+  
+
 }
 
 int main(void){
@@ -152,13 +191,15 @@ int main(void){
 
         // sort the array in descending order.
         insertionSort(arrayOfnodes, countnodes);
-        
+
 
         for (int i = 0; i < countnodes; i++)
         {
-            root = insertnode(root, &arrayOfnodes[i]);
+            //root = insertAVL(root, &arrayOfnodes[i]);
             printf("node %d\n", arrayOfnodes[i].value);
         }
+
+        printOutput(countnodes);
         
     }
     free(arrayOfnodes);
