@@ -149,25 +149,28 @@ void printOutput(int numberOfFullDepthLevels, int numberOfDepthLevels, int numbe
 }
 
 node *findKey(node *currentNode, int key, int position, int depth){
-  if(currentNode->value == key){
-    currentNode->position = position;
-    currentNode->depthLevel = depth;
-    return currentNode;
-  }else if (currentNode->value > key){
-    return findKey(currentNode->leftChild, key, 2*position-1, depth+1);
-  }else if (currentNode->value < key){
-    return findKey(currentNode->rightChild, key, 2*position, depth+1);
+  if(currentNode != NULL){
+    if(currentNode->value == key){
+      currentNode->position = position;
+      currentNode->depthLevel = depth;
+      return currentNode;
+    }else if (currentNode->value > key){
+      return findKey(currentNode->leftChild, key, 2*position-1, depth+1);
+    }else if (currentNode->value < key){
+      return findKey(currentNode->rightChild, key, 2*position, depth+1);
+    }
   }
   return NULL;
 }
 
-void printPreOrder(node *root) {
-  if (root != NULL) {
-    printf("%d ", root->value);
-    printPreOrder(root->leftChild);
-    printPreOrder(root->rightChild);
+int checkCase(int numOfNodes){
+  if (ceil(log2(numOfNodes)) == floor(log2(numOfNodes))){
+    return 2;
   }
+  else
+    return 1;
 }
+
 int main(void){
     FILE *inputFilePtr;
     node* root = NULL;
@@ -183,8 +186,8 @@ int main(void){
       while (fscanf(inputFilePtr, " %10s", currentNumber) == 1)
       {   
           // check node, if less than zero
-          if(atoi(currentNumber) < 0){
-              printf("Input file contains values less than zero.\n");
+          if(atoi(currentNumber) <= 0){
+              printf("Input file contains values less than or equal to zero.\n");
               return -1;
           }
           // check node, if replicate node occurs
@@ -222,30 +225,33 @@ int main(void){
       int remainingNodes = countnodes-(int)pow(2, numberOfFullDepthLevels)+1-numberOfAccesiveNodes;
       printOutput(numberOfFullDepthLevels, numberOfDepthLevels, numberOfAccesiveNodes, remainingNodes);
       
-      int i, j;
-      for (i = 0; i < countnodes-remainingNodes; i++){
-          root = insertAVL(root, &arrayOfnodes[i]);
-          printf("node avl %d\n", arrayOfnodes[i].value);
-      }
+      if(checkCase(countnodes) == 1){
 
-      for (j = 0; j < remainingNodes; j++)
-      {
-          insertBST(root, &arrayOfnodes[i+j]);
-          printf("node remaining %d\n", arrayOfnodes[i+j].value);
-      }
-      
-      printPreOrder(root);
+        int i, j;
+        for (i = 0; i < countnodes-remainingNodes; i++){
+            root = insertAVL(root, &arrayOfnodes[i]);
+            printf("node avl %d\n", arrayOfnodes[i].value);
+        }
 
-      int input;
-      while(input != 0){
-        printf("\nKey value to be searched (Enter 0 to exit) :");
-        scanf("%d", &input);
-        node *keyNode = findKey(root, input, 1, 0);
-        if(keyNode == NULL){
-          printf("%d is not found in BST", input);
-        }else{
-          printf("At Depth level %d, %d. element", keyNode->depthLevel, keyNode->position);
-        } 
+        for (j = 0; j < remainingNodes; j++)
+        {
+            insertBST(root, &arrayOfnodes[i+j]);
+            printf("node remaining %d\n", arrayOfnodes[i+j].value);
+        }
+
+        int input;
+        while(input != 0){
+          printf("\nKey value to be searched (Enter 0 to exit) :");
+          scanf("%d", &input);
+          node *keyNode = findKey(root, input, 1, 0);
+          if(keyNode == NULL && input != 0){
+            printf("%d is not found in BST", input);
+          }else{
+            printf("At Depth level %d, %d. element", keyNode->depthLevel, keyNode->position);
+          } 
+        }
+      } else {
+        // case 2
       }
     }
 
