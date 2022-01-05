@@ -7,7 +7,7 @@
 //max macro
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-// node structure for linked list
+// node structure
 typedef struct Node{
     int value;
     int height;
@@ -39,7 +39,7 @@ int getHeight(node *curNode) {
   return curNode->height;
 }
 
-// right rotate (L/L Case)
+// right rotate (L/L Case single rotation)
 node *rightRotate(node *k2) {
   node *k1 = k2->leftChild;
   node *y = k1->rightChild;
@@ -54,7 +54,7 @@ node *rightRotate(node *k2) {
   return k1;
 }
 
-// left rotate (R/R case)
+// left rotate (R/R case single rotation)
 node *leftRotate(node *k1) {
   node *k2 = k1->rightChild;
   node *y = k2->leftChild;
@@ -95,18 +95,18 @@ node *insertAVL(node *curNode, node *keyNode) {
   // apply rotations to balance the tree
   int balanceCondition = checkBalance(curNode);
   // L/L case
-  if (keyNode->value < curNode->leftChild->value && balanceCondition > 1)
+  if (balanceCondition > 1 && keyNode->value < curNode->leftChild->value)
     return rightRotate(curNode);
   // R/R case
-  if (keyNode->value > curNode->rightChild->value && balanceCondition < -1)
+  if (balanceCondition < -1 && keyNode->value > curNode->rightChild->value)
     return leftRotate(curNode);
   // R/L case
-  if (keyNode->value > curNode->leftChild->value && balanceCondition > 1) {
+  if (balanceCondition > 1 && keyNode->value > curNode->leftChild->value) {
     curNode->leftChild = leftRotate(curNode->leftChild);
     return rightRotate(curNode);
   }
   // L/R case
-  if (keyNode->value < curNode->rightChild->value && balanceCondition < -1) {
+  if (balanceCondition < -1 && keyNode->value < curNode->rightChild->value) {
     curNode->rightChild = rightRotate(curNode->rightChild);
     return leftRotate(curNode);
   }
@@ -181,31 +181,33 @@ int main(void){
     FILE *inputFilePtr;
     node* root = NULL;
     int countnodes = 0;
-    char currentNumber[11];
+    char currentNumber[11]; // it can read 11 digits at once to represent one number.
 
     node *arrayOfnodes = calloc(2, sizeof(node));
 
-    // main function gets the dir of input file from command line
+    // main function gets the dir of input file
     if ((inputFilePtr = fopen("input.txt", "r")) != NULL) {
 
-      // creates a linked list for multiplicand from input
+      // while reading numbers, creates nodes and puts it into an array
       while (fscanf(inputFilePtr, " %10s", currentNumber) == 1)
       {   
 
-          // check node, if less than zero
-          int zeroFL = 0;
-          int replicatedFL = 0;
+          // check if node is less than or equal to zero
+          int zeroFL = 0; // flag for node <= 0
+          int replicatedFL = 0; // flag for replicated node
+
           if(atoi(currentNumber) <= 0){
               printf("[ERROR]: Input file contains values less than or equal to zero. %d not inserted to BST.\n", atoi(currentNumber));
               zeroFL = 1;
           }
-          // check node, if replicate node occurs
+          // check if replicated node occurs
           for(int i=0; i < countnodes; i++){
               if (arrayOfnodes[i].value == atoi(currentNumber)){
                   printf("[ERROR]: Input file contains replicated keys. %d not inserted to BST.\n", atoi(currentNumber));
                   replicatedFL = 1;
               }
           }
+          
           // if no negative value and no replicated key then create the node.
           if (zeroFL == 0 && replicatedFL == 0){
             node newnode;
