@@ -129,7 +129,7 @@ node *insertBST(node *curNode, node *newNode){
 }
 
 
-void printOutput(int numberOfFullDepthLevels, int numberOfDepthLevels, int numberOfAccesiveNodes, int remainingNodes, int getCase){
+void printOutput(int numberOfFullDepthLevels, int numberOfDepthLevels, int numberOfExcessiveNodes, int remainingNodes, int getCase){
   printf("Output:\n");
   printf("Depth level of BST is %d\n", numberOfDepthLevels);
   // show nodes in depth levels for case 1
@@ -138,7 +138,7 @@ void printOutput(int numberOfFullDepthLevels, int numberOfDepthLevels, int numbe
     for (depthLevel = 0; depthLevel< numberOfFullDepthLevels; depthLevel++){
       printf("Depth level %d -> %d\n", depthLevel, (int)pow(2,depthLevel));
     }
-    printf("Depth level %d -> %d\n", depthLevel++, numberOfAccesiveNodes);
+    printf("Depth level %d -> %d\n", depthLevel++, numberOfExcessiveNodes);
     while(remainingNodes>0){
       printf("Depth level %d -> %d\n", depthLevel++, 1);
       remainingNodes--;
@@ -146,15 +146,14 @@ void printOutput(int numberOfFullDepthLevels, int numberOfDepthLevels, int numbe
   // show depth levels for case 2. (Borrow nodes from Complete BST of the tree.)
   }else if(getCase == 2){
     int depthLevel;
-    
     for (depthLevel = 0; depthLevel< numberOfFullDepthLevels-1; depthLevel++){
       printf("Depth level %d -> %d\n", depthLevel, (int)pow(2,depthLevel));
     }
 
-    // took one node from last full node
-    // and gave it to accessive depth level (one below of complete binary tree)
+    // took one node from last full depth level
+    // and gave it to excessive depth level (one below of complete binary tree)
     printf("Depth level %d -> %d\n", depthLevel, (int)pow(2,depthLevel)-1);
-    printf("Depth level %d -> %d\n", ++depthLevel, numberOfAccesiveNodes=1);
+    printf("Depth level %d -> %d\n", ++depthLevel, numberOfExcessiveNodes=1);
     while(remainingNodes>0){
       printf("Depth level %d -> %d\n", ++depthLevel, 1);
       remainingNodes--;
@@ -217,10 +216,10 @@ int main(void){
             newnode.depthLevel = 0;
             newnode.leftChild = NULL;
             newnode.rightChild = NULL;
+            // increase the size of the array
             arrayOfnodes = realloc(arrayOfnodes, countnodes * (sizeof(node)+1));
             arrayOfnodes[countnodes] = newnode; 
             countnodes++;
-            
           }
       }
         
@@ -232,7 +231,7 @@ int main(void){
 
       // sort the array in descending order.
       insertionSort(arrayOfnodes, countnodes);
-
+    
       //check if number of created nodes are power of 2
       int checkCase = ((ceil(log2(countnodes)) == floor(log2(countnodes)))? 2 : 1);
       
@@ -240,11 +239,11 @@ int main(void){
       int numberOfFullDepthLevels = (int)floor(log2(countnodes));
       // get total depth levels
       int numberOfDepthLevels = 3*floor(log(countnodes)/log(4));
-      // get the number nodes after BST. it is mentioned as Accesive Nodes in the lecture.
-      int numberOfAccesiveNodes = countnodes - (int)pow(2, floor(log2(countnodes)))+1-numberOfDepthLevels+numberOfFullDepthLevels+1;
+      // get the number nodes after BST. it is mentioned as Excessive Nodes in the lecture.
+      int numberOfExcessiveNodes = countnodes - (int)pow(2, floor(log2(countnodes)))+1-numberOfDepthLevels+numberOfFullDepthLevels+1;
       // get the remaining nodes considering calculations above
-      int remainingNodes = countnodes-(int)pow(2, numberOfFullDepthLevels)+1-numberOfAccesiveNodes;
-      printOutput(numberOfFullDepthLevels, numberOfDepthLevels, numberOfAccesiveNodes, remainingNodes, checkCase);
+      int remainingNodes = countnodes-(int)pow(2, numberOfFullDepthLevels)+1-numberOfExcessiveNodes;
+      printOutput(numberOfFullDepthLevels, numberOfDepthLevels, numberOfExcessiveNodes, remainingNodes, checkCase);
 
       //check if it is case 1 or case 2.
       if(checkCase == 1){
